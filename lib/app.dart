@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:heroshop_app/config/theme.dart';
 import 'package:heroshop_app/screens/home_page/home_page.dart';
 
 class MyApp extends StatelessWidget {
@@ -8,6 +9,10 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
+      showSemanticsDebugger: false,
+      theme: AppTheme.lightTheme,
+      darkTheme: AppTheme.darkTheme,
+      themeMode: ThemeMode.system,
       locale: const Locale('fa'),
       supportedLocales: const <Locale>[Locale('fa'), Locale('en')],
       debugShowCheckedModeBanner: false,
@@ -16,7 +21,6 @@ class MyApp extends StatelessWidget {
         GlobalWidgetsLocalizations.delegate,
         GlobalCupertinoLocalizations.delegate,
       ],
-      theme: ThemeData(fontFamily: 'IranSans'),
       home: const HomePage(),
     );
   }

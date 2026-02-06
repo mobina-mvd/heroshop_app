@@ -1,5 +1,5 @@
+// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
-import 'package:heroshop_app/config/colors.dart';
 
 class HomePage extends StatelessWidget {
   const HomePage({super.key});
@@ -10,13 +10,15 @@ class HomePage extends StatelessWidget {
       drawer: const Drawer(),
       appBar: const MyAppBar(
         title: 'هیروشاپ',
-        titleColor: AppColors.primaryLight,
+        // titleColor: Theme.of(context).brightness == Brightness.dark
+        //     ? AppColors.onPrimaryDark
+        //     : AppColors.onPrimaryLight,
       ),
 
       body: const Center(child: Icon(Icons.public_sharp, size: 200)),
       bottomNavigationBar: NavigationBar(
         elevation: 0,
-        backgroundColor: AppColors.backgroundLight,
+        // backgroundColor: AppColors.backgroundLight,
         indicatorColor: Colors.red,
         destinations: const [
           NavigationDestination(icon: Icon(Icons.home), label: 'خانه'),
@@ -50,18 +52,17 @@ class HomePage extends StatelessWidget {
 
 class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   final String title;
-  final Color titleColor;
-  const MyAppBar({super.key, required this.title, required this.titleColor});
+  const MyAppBar({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      title: Text(title, style: TextStyle(color: titleColor, fontSize: 25)),
+      title: Text(title, style: const TextStyle(fontSize: 25)),
       toolbarOpacity: 1,
       elevation: 0,
-      foregroundColor: AppColors.borderDark,
-      backgroundColor: AppColors.backgroundLight,
-      toolbarHeight: 80,
+      // foregroundColor: AppColors.borderDark,
+      // backgroundColor: AppColors.backgroundLight,
+      toolbarHeight: 56,
       // bottom: const TabBar(tabs: [Text('Tab1'), Text('Tab2')]),
       actions: [
         IconButton(
@@ -75,5 +76,5 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
   }
 
   @override
-  Size get preferredSize => const Size.fromHeight(80);
+  Size get preferredSize => const Size.fromHeight(56);
 }
