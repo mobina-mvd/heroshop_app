@@ -6,15 +6,44 @@ class HomePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const Scaffold(
-      drawer: Drawer(),
-      appBar: MyAppBar(title: 'هیروشاپ', titleColor: AppColors.primaryLight),
-      // floatingActionButtonLocation: FloatingActionButtonLocation.startFloat,
-      floatingActionButton: FloatingActionButton(
-        onPressed: null,
-        child: Icon(Icons.add),
+    return Scaffold(
+      drawer: const Drawer(),
+      appBar: const MyAppBar(
+        title: 'هیروشاپ',
+        titleColor: AppColors.primaryLight,
       ),
-      body: Text('Hello HeroShop App , Welcome'),
+
+      body: const Center(child: Icon(Icons.public_sharp, size: 200)),
+      bottomNavigationBar: NavigationBar(
+        elevation: 0,
+        backgroundColor: AppColors.backgroundLight,
+        indicatorColor: Colors.red,
+        destinations: const [
+          NavigationDestination(icon: Icon(Icons.home), label: 'خانه'),
+          NavigationDestination(icon: Icon(Icons.menu), label: 'منو'),
+          NavigationDestination(
+            icon: Icon(Icons.shopping_basket_outlined),
+            label: 'سبد خرید',
+          ),
+          NavigationDestination(icon: Icon(Icons.search), label: 'جستجو'),
+          NavigationDestination(
+            icon: Icon(Icons.person_outline),
+            label: 'داشبورد',
+          ),
+        ],
+      ),
+
+      // BottomNavigationBar(
+      //   currentIndex: 0,
+      //   backgroundColor: Colors.red,
+
+      //   items: const <BottomNavigationBarItem>[
+      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
+      //   ],
+      // ),
     );
   }
 }
@@ -33,6 +62,7 @@ class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
       foregroundColor: AppColors.borderDark,
       backgroundColor: AppColors.backgroundLight,
       toolbarHeight: 80,
+      // bottom: const TabBar(tabs: [Text('Tab1'), Text('Tab2')]),
       actions: [
         IconButton(
           onPressed: () {},
