@@ -1,9 +1,11 @@
 // ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
+import 'package:heroshop_app/models/product_model.dart';
+import 'package:heroshop_app/services/product_api_service.dart';
 
 class HomePage extends StatelessWidget {
-  const HomePage({super.key});
-
+  final apiService = ProductApiService();
+  HomePage({super.key});
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -15,7 +17,48 @@ class HomePage extends StatelessWidget {
         //     : AppColors.onPrimaryLight,
       ),
 
-      body: const Center(child: Icon(Icons.public_sharp, size: 200)),
+      body: Column(
+        children: [
+          FutureBuilder<List<Product>>(
+            future: apiService.getVipProducts(),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              }
+              if (snapshot.hasError) {
+                return const Center(child: Text('Error'));
+              }
+              final List<Product> products = snapshot.data!;
+
+              return ListView.builder(
+                itemCount: products.length,
+                itemBuilder: (BuildContext context, int index) {
+                  final Product product = products[index];
+
+                  return Card.outlined(
+                    elevation: 4,
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(14),
+                    ),
+                    child: Column(
+                      children: [
+                        Image.network(product.image),
+                        const SizedBox(height: 20),
+                        Text(product.title),
+                        Text(product.price.toString()),
+                        IconButton(
+                          onPressed: () {},
+                          icon: const Icon(Icons.front_hand_sharp),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              );
+            },
+          ),
+        ],
+      ),
       bottomNavigationBar: NavigationBar(
         elevation: 0,
         // backgroundColor: AppColors.backgroundLight,
