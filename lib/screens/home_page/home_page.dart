@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 import 'package:flutter/material.dart';
 import 'package:heroshop_app/models/product_model.dart';
 import 'package:heroshop_app/services/product_api_service.dart';
@@ -20,40 +19,44 @@ class HomePage extends StatelessWidget {
       body: Column(
         children: [
           FutureBuilder<List<Product>>(
-            future: apiService.getVipProducts(),
+            future: apiService.getProducts(),
             builder: (context, snapshot) {
               if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
               }
               if (snapshot.hasError) {
+                print(snapshot.hasError);
                 return const Center(child: Text('Error'));
               }
               final List<Product> products = snapshot.data!;
+              print(products.length);
 
-              return ListView.builder(
-                itemCount: products.length,
-                itemBuilder: (BuildContext context, int index) {
-                  final Product product = products[index];
+              return SizedBox(
+                height: 200,
+                width: double.infinity,
+                child: ListView.builder(
+                  itemCount: products.length,
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.all(10),
+                  itemBuilder: (BuildContext context, int index) {
+                    final Product product = products[index];
 
-                  return Card.outlined(
-                    elevation: 4,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
-                    child: Column(
-                      children: [
-                        Image.network(product.image),
-                        const SizedBox(height: 20),
-                        Text(product.title),
-                        Text(product.price.toString()),
-                        IconButton(
-                          onPressed: () {},
-                          icon: const Icon(Icons.front_hand_sharp),
-                        ),
-                      ],
-                    ),
-                  );
-                },
+                    return Card.outlined(
+                      child: Column(
+                        children: [
+                          Expanded(child: Image.network(product.image)),
+                          const SizedBox(height: 20),
+                          Text(product.title),
+                          Text(product.price.toString()),
+                          IconButton(
+                            onPressed: () {},
+                            icon: const Icon(Icons.front_hand_sharp),
+                          ),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               );
             },
           ),
