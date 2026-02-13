@@ -2,9 +2,12 @@ import 'package:heroshop_app/config/dio_client.dart';
 import 'package:heroshop_app/models/product_model.dart';
 
 class ProductApiService {
-  Future<List<Product>> getProducts() async {
+  Future<List<Product>> getProducts({required int page}) async {
     try {
-      final response = await DioClient.dio.get('/products');
+      final response = await DioClient.dio.get(
+        '/products',
+        queryParameters: {'page': page},
+      );
 
       final Map<String, dynamic> responseData = response.data;
       final List<dynamic> dataList = responseData['data'] as List<dynamic>;
@@ -17,8 +20,8 @@ class ProductApiService {
     }
   }
 
-  Future<List<Product>> getVipProducts() async {
-    final products = await getProducts();
+  Future<List<Product>> getVipProducts({required int page}) async {
+    final products = await getProducts(page: page);
 
     return products.where((p) => p.vip == true).toList();
   }

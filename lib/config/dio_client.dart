@@ -8,9 +8,9 @@ class DioClient {
       receiveTimeout: const Duration(seconds: 20),
       headers: {
         'Authorization':
-            'Bearer NqzfCbN4SurzHgeOvbx6q3xEZlAAqlvUIFwMHZeL03bffbbe',
-        'Accept': 'application/json',
-        'Content-Type': 'application/json',
+            'Bearer G6JS8WL57ihIee9HYojbNyQpqXZEQTm7BHU93tT6332034ea',
+        // 'Accept': 'application/json',
+        // 'Content-Type': 'application/json',
       },
     ),
   );

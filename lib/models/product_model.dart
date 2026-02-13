@@ -1,8 +1,8 @@
 class Product {
   final int id;
   final String title;
-  final double? vipPrice;
-  final double price;
+  final int? vipPrice;
+  final int price;
   final int? takhfifPercent;
   final String link;
   final String image;
@@ -25,9 +25,9 @@ class Product {
     return Product(
       id: json['id'],
       title: json['title'],
-      price: (json['price']).toDouble(),
+      price: (json['price']).toInt(),
       vipPrice: (json['vip_price'] != null
-          ? (json['vip_price'] as num).toDouble()
+          ? (json['vip_price'] as num).toInt()
           : 0),
       takhfifPercent: (json['takhfif'] != null
           ? (json['takhfif'] as num).toInt()

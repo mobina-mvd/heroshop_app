@@ -3,7 +3,6 @@ import 'package:heroshop_app/models/product_model.dart';
 import 'package:heroshop_app/services/product_api_service.dart';
 
 class HomePage extends StatelessWidget {
-  final apiService = ProductApiService();
   HomePage({super.key});
   @override
   Widget build(BuildContext context) {
@@ -16,52 +15,7 @@ class HomePage extends StatelessWidget {
         //     : AppColors.onPrimaryLight,
       ),
 
-      body: Column(
-        children: [
-          FutureBuilder<List<Product>>(
-            future: apiService.getProducts(),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              }
-              if (snapshot.hasError) {
-                print(snapshot.hasError);
-                return const Center(child: Text('Error'));
-              }
-              final List<Product> products = snapshot.data!;
-              print(products.length);
-
-              return SizedBox(
-                height: 200,
-                width: double.infinity,
-                child: ListView.builder(
-                  itemCount: products.length,
-                  scrollDirection: Axis.horizontal,
-                  padding: const EdgeInsets.all(10),
-                  itemBuilder: (BuildContext context, int index) {
-                    final Product product = products[index];
-
-                    return Card.outlined(
-                      child: Column(
-                        children: [
-                          Expanded(child: Image.network(product.image)),
-                          const SizedBox(height: 20),
-                          Text(product.title),
-                          Text(product.price.toString()),
-                          IconButton(
-                            onPressed: () {},
-                            icon: const Icon(Icons.front_hand_sharp),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-          ),
-        ],
-      ),
+      body: const Column(children: [ProductList()]),
       bottomNavigationBar: NavigationBar(
         elevation: 0,
         // backgroundColor: AppColors.backgroundLight,
@@ -92,6 +46,115 @@ class HomePage extends StatelessWidget {
       //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
       //   ],
       // ),
+    );
+  }
+}
+
+class ProductList extends StatefulWidget {
+  const ProductList({super.key});
+
+  @override
+  State<ProductList> createState() => _ProductListState();
+}
+
+class _ProductListState extends State<ProductList> {
+  final apiService = ProductApiService();
+  final ScrollController _scrollController = ScrollController();
+
+  List<Product> products = [];
+  int currentPage = 1;
+  bool isLoading = false;
+  bool hasMore = true;
+
+  @override
+  void initState() {
+    fetchProducts();
+
+    _scrollController.addListener(() {
+      if (_scrollController.position.pixels >=
+              _scrollController.position.maxScrollExtent - 200 &&
+          !isLoading &&
+          hasMore) {
+        // وقتی نزدیک پایین لیست شدیم، صفحه بعدی را بگیریم
+        fetchProducts();
+      }
+    });
+    super.initState();
+  }
+
+  Future<void> fetchProducts() async {
+    setState(() => isLoading = true);
+
+    final newProducts = await apiService.getProducts(page: currentPage);
+
+    setState(() {
+      currentPage++;
+      isLoading = false;
+      if (newProducts.isEmpty) {
+        hasMore = false;
+      } else {
+        products.addAll(newProducts);
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Expanded(
+      child: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          childAspectRatio: 0.5,
+          mainAxisSpacing: 8,
+          crossAxisSpacing: 8,
+        ),
+        controller: _scrollController,
+
+        itemCount: products.length + (hasMore ? 1 : 0),
+        scrollDirection: Axis.vertical,
+
+        padding: const EdgeInsets.all(10),
+        itemBuilder: (BuildContext context, int index) {
+          if (index < products.length) {
+            final Product product = products[index];
+            return Card(
+              elevation: 2,
+              child: Column(
+                children: [
+                  ClipRRect(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(14),
+                      topRight: Radius.circular(14),
+                    ),
+
+                    child: Image.network(product.image, fit: BoxFit.contain),
+                  ),
+                  const SizedBox(height: 20),
+                  Text(product.title),
+                  Text(product.price.toString()),
+                  IconButton(
+                    onPressed: () {},
+                    icon: const Icon(Icons.front_hand_sharp),
+                  ),
+                ],
+              ),
+            );
+          } else {
+            // Loader در پایین لیست
+            return const Padding(
+              padding: EdgeInsets.all(16.0),
+              child: Center(child: CircularProgressIndicator()),
+            );
+          }
+        },
+      ),
     );
   }
 }
