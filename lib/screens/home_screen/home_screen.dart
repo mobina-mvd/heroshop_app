@@ -1,52 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:heroshop_app/models/product_model.dart';
+import 'package:heroshop_app/services/homepage_api_services.dart';
 import 'package:heroshop_app/services/product_api_service.dart';
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class HomeScreen extends StatelessWidget {
+  const HomeScreen({super.key});
+
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      drawer: const Drawer(),
-      appBar: const MyAppBar(
-        title: 'هیروشاپ',
-        // titleColor: Theme.of(context).brightness == Brightness.dark
-        //     ? AppColors.onPrimaryDark
-        //     : AppColors.onPrimaryLight,
-      ),
-
-      body: const Column(children: [ProductList()]),
-      bottomNavigationBar: NavigationBar(
-        elevation: 0,
-        // backgroundColor: AppColors.backgroundLight,
-        indicatorColor: Colors.red,
-        destinations: const [
-          NavigationDestination(icon: Icon(Icons.home), label: 'خانه'),
-          NavigationDestination(icon: Icon(Icons.menu), label: 'منو'),
-          NavigationDestination(
-            icon: Icon(Icons.shopping_basket_outlined),
-            label: 'سبد خرید',
-          ),
-          NavigationDestination(icon: Icon(Icons.search), label: 'جستجو'),
-          NavigationDestination(
-            icon: Icon(Icons.person_outline),
-            label: 'داشبورد',
-          ),
-        ],
-      ),
-
-      // BottomNavigationBar(
-      //   currentIndex: 0,
-      //   backgroundColor: Colors.red,
-
-      //   items: const <BottomNavigationBarItem>[
-      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-      //     BottomNavigationBarItem(icon: Icon(Icons.home), label: "Home"),
-      //   ],
-      // ),
-    );
+    return const Column(children: [ProductList()]);
   }
 }
 
@@ -58,7 +20,8 @@ class ProductList extends StatefulWidget {
 }
 
 class _ProductListState extends State<ProductList> {
-  final apiService = ProductApiService();
+  final homePageApiService = HomePageApiServices();
+  final productApiService = ProductApiService();
   final ScrollController _scrollController = ScrollController();
 
   List<Product> products = [];
@@ -85,7 +48,9 @@ class _ProductListState extends State<ProductList> {
   Future<void> fetchProducts() async {
     setState(() => isLoading = true);
 
-    final newProducts = await apiService.getProducts(page: currentPage);
+    final newProducts = await productApiService.getVipProducts(
+      page: currentPage,
+    );
 
     setState(() {
       currentPage++;
@@ -157,33 +122,4 @@ class _ProductListState extends State<ProductList> {
       ),
     );
   }
-}
-
-class MyAppBar extends StatelessWidget implements PreferredSizeWidget {
-  final String title;
-  const MyAppBar({super.key, required this.title});
-
-  @override
-  Widget build(BuildContext context) {
-    return AppBar(
-      title: Text(title, style: const TextStyle(fontSize: 25)),
-      toolbarOpacity: 1,
-      elevation: 0,
-      // foregroundColor: AppColors.borderDark,
-      // backgroundColor: AppColors.backgroundLight,
-      toolbarHeight: 56,
-      // bottom: const TabBar(tabs: [Text('Tab1'), Text('Tab2')]),
-      actions: [
-        IconButton(
-          onPressed: () {},
-          icon: const Icon(Icons.shopping_basket_outlined, size: 28),
-        ),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.person, size: 28)),
-        IconButton(onPressed: () {}, icon: const Icon(Icons.search, size: 28)),
-      ],
-    );
-  }
-
-  @override
-  Size get preferredSize => const Size.fromHeight(56);
 }

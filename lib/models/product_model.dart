@@ -21,21 +21,21 @@ class Product {
     required this.freeSend,
   });
 
-  factory Product.fromJson(Map<String, dynamic> json) {
+  factory Product.fromMap(Map<String, dynamic> map) {
     return Product(
-      id: json['id'],
-      title: json['title'],
-      price: (json['price']).toInt(),
-      vipPrice: (json['vip_price'] != null
-          ? (json['vip_price'] as num).toInt()
+      id: map['id'],
+      title: map['title'],
+      price: (map['price']).toInt(),
+      vipPrice: (map['vip_price'] != null
+          ? (map['vip_price'] as num).toInt()
           : 0),
-      takhfifPercent: (json['takhfif'] != null
-          ? (json['takhfif'] as num).toInt()
+      takhfifPercent: (map['takhfif'] != null
+          ? (map['takhfif'] as num).toInt()
           : 0),
-      link: json['link'],
-      image: json['image'],
-      vip: json['vip'] == 1,
-      freeSend: json['free_send'] == 1,
+      link: map['link'],
+      image: map['image'],
+      vip: map['vip'] == 1,
+      freeSend: map['free_send'] == 1,
     );
   }
 }

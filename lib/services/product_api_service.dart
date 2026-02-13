@@ -13,7 +13,7 @@ class ProductApiService {
       final List<dynamic> dataList = responseData['data'] as List<dynamic>;
 
       return dataList
-          .map((e) => Product.fromJson(e as Map<String, dynamic>))
+          .map((e) => Product.fromMap(e as Map<String, dynamic>))
           .toList();
     } catch (e) {
       return Future.error(e);
@@ -22,7 +22,7 @@ class ProductApiService {
 
   Future<List<Product>> getVipProducts({required int page}) async {
     final products = await getProducts(page: page);
-
+    print(products.where((p) => p.vip == true).toList());
     return products.where((p) => p.vip == true).toList();
   }
 }
