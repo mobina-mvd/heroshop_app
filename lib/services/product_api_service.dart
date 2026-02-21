@@ -20,9 +20,5 @@ class ProductApiService {
     }
   }
 
-  Future<List<Product>> getVipProducts({required int page}) async {
-    final products = await getProducts(page: page);
-    print(products.where((p) => p.vip == true).toList());
-    return products.where((p) => p.vip == true).toList();
-  }
+  
 }

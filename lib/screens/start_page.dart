@@ -40,6 +40,8 @@ class _StartPageState extends State<StartPage> {
             });
           }
         },
+        iconSize: 24,
+        selectedIconTheme: const IconThemeData(size: 30),
         items: const <BottomNavigationBarItem>[
           BottomNavigationBarItem(icon: Icon(Icons.home), label: ''),
           BottomNavigationBarItem(icon: Icon(Icons.menu), label: ''),

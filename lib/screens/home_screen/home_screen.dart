@@ -1,123 +1,131 @@
 import 'package:flutter/material.dart';
+import 'package:heroshop_app/config/constants.dart';
+import 'package:heroshop_app/models/home_response_model.dart';
 import 'package:heroshop_app/models/product_model.dart';
 import 'package:heroshop_app/services/homepage_api_services.dart';
-import 'package:heroshop_app/services/product_api_service.dart';
+import 'package:heroshop_app/widgets/product_card.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return const Column(children: [ProductList()]);
-  }
-}
+    HomePageApiServices homePageApiServices = HomePageApiServices();
 
-class ProductList extends StatefulWidget {
-  const ProductList({super.key});
+    return Scaffold(
+      body: SafeArea(
+        child: FutureBuilder<HomeResponse>(
+          future: homePageApiServices.getHomePageData(),
+          builder: (context, asyncSnapshot) {
+            if (asyncSnapshot.connectionState == ConnectionState.waiting) {
+              return const Center(
+                child: CircularProgressIndicator(color: Colors.white),
+              );
+            } else if (asyncSnapshot.hasError) {
+              return const Center(child: Text('Error loading data'));
+            } else if (!asyncSnapshot.hasData) {
+              return const Center(child: Text('No data'));
+            } else {
+              final data = asyncSnapshot.data!;
 
-  @override
-  State<ProductList> createState() => _ProductListState();
-}
+              return ListView(
+                children: [
+                  const SizedBox(
+                    height: 200,
+                    child: Center(child: Text('Slider Page View')),
+                  ),
 
-class _ProductListState extends State<ProductList> {
-  final homePageApiService = HomePageApiServices();
-  final productApiService = ProductApiService();
-  final ScrollController _scrollController = ScrollController();
+                  VipProductsSection(products: data.vipProducts),
 
-  List<Product> products = [];
-  int currentPage = 1;
-  bool isLoading = false;
-  bool hasMore = true;
+                  const SizedBox(
+                    height: 255,
+                    child: Center(child: Text('New Products Carusel')),
+                  ),
+                  const SizedBox(
+                    height: 255,
+                    child: Center(child: Text('Top Seller Products Carusel')),
+                  ),
+                  const SizedBox(
+                    height: 255,
+                    child: Center(child: Text('Brands List Carusel')),
+                  ),
 
-  @override
-  void initState() {
-    fetchProducts();
-
-    _scrollController.addListener(() {
-      if (_scrollController.position.pixels >=
-              _scrollController.position.maxScrollExtent - 200 &&
-          !isLoading &&
-          hasMore) {
-        // وقتی نزدیک پایین لیست شدیم، صفحه بعدی را بگیریم
-        fetchProducts();
-      }
-    });
-    super.initState();
-  }
-
-  Future<void> fetchProducts() async {
-    setState(() => isLoading = true);
-
-    final newProducts = await productApiService.getVipProducts(
-      page: currentPage,
+                  ...List<Widget>.generate(10, (index) {
+                    return SizedBox(
+                      height: 255,
+                      child: Center(
+                        child: Text(
+                          'MainCategory Products Carusels ${index + 1}',
+                        ),
+                      ),
+                    );
+                  }),
+                ],
+              );
+            }
+          },
+        ),
+      ),
     );
-
-    setState(() {
-      currentPage++;
-      isLoading = false;
-      if (newProducts.isEmpty) {
-        hasMore = false;
-      } else {
-        products.addAll(newProducts);
-      }
-    });
   }
+}
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-
-    super.dispose();
-  }
+class VipProductsSection extends StatelessWidget {
+  final List<Product> products;
+  const VipProductsSection({super.key, required this.products});
 
   @override
   Widget build(BuildContext context) {
-    return Expanded(
-      child: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          childAspectRatio: 0.5,
-          mainAxisSpacing: 8,
-          crossAxisSpacing: 8,
-        ),
-        controller: _scrollController,
+    SizeConfig.init(context);
 
-        itemCount: products.length + (hasMore ? 1 : 0),
-        scrollDirection: Axis.vertical,
+    final cardHeight = SizeConfig.blockSizeVertical * 40;
+    final cardWidth = SizeConfig.blockSizeHorizontal * 50;
 
-        padding: const EdgeInsets.all(10),
-        itemBuilder: (BuildContext context, int index) {
-          if (index < products.length) {
-            final Product product = products[index];
-            return Card(
-              elevation: 2,
-              child: Column(
-                children: [
-                  ClipRRect(
-                    borderRadius: const BorderRadius.only(
-                      topLeft: Radius.circular(14),
-                      topRight: Radius.circular(14),
-                    ),
-
-                    child: Image.network(product.image, fit: BoxFit.contain),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(product.title),
-                  Text(product.price.toString()),
-                  IconButton(
-                    onPressed: () {},
-                    icon: const Icon(Icons.front_hand_sharp),
-                  ),
-                ],
+    return Container(
+      color: Theme.of(context).primaryColor,
+      padding: const EdgeInsets.symmetric(vertical: 16),
+      height: cardHeight,
+      child: ListView.separated(
+        itemCount: products.length + 1,
+        padding: const EdgeInsets.only(left: 12),
+        scrollDirection: Axis.horizontal,
+        separatorBuilder: (BuildContext context, int index) {
+          return const SizedBox(width: 12);
+        },
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return Padding(
+              padding: EdgeInsets.only(
+                left: SizeConfig.blockSizeHorizontal * 4,
+                right: SizeConfig.blockSizeHorizontal * 3,
+              ),
+              child: SizedBox(
+                width: cardWidth,
+                height: cardHeight,
+                child: const Center(child: Text('hello')), // کارت ثابت
               ),
             );
-          } else {
-            // Loader در پایین لیست
-            return const Padding(
-              padding: EdgeInsets.all(16.0),
-              child: Center(child: CircularProgressIndicator()),
-            );
           }
+
+          // بقیه محصولات (با شیفت اندیس)
+          final product = products[index - 1];
+
+          return SizedBox(
+            width: cardWidth,
+            height: cardHeight,
+            child: ProductCard(
+              id: product.id,
+              title: product.title,
+              vipPrice: product.vipPrice!,
+              price: product.price,
+              takhfifPercent: product.takhfifPercent!,
+              link: product.link,
+              image: product.image,
+              vip: product.vip,
+              freeSend: product.freeSend,
+              onTap: () {},
+            ),
+          );
         },
       ),
     );
